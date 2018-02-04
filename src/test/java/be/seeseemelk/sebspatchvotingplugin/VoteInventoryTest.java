@@ -69,7 +69,7 @@ public class VoteInventoryTest
 		assertTrue(inventory.hasVoteOption("option b"));
 	}
 	
-	@Test(expected = IllegalAccessError.class)
+	@Test(expected = VotingOptionNotFoundException.class)
 	public void removeItem_ItemDoesNotExist_ThrowsException()
 	{
 		inventory.removeVoteOption("option");
