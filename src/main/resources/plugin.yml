@@ -2,6 +2,6 @@ name: SebsPatchVotingPlugin
 main: be.seeseemelk.sebspatchvotingplugin.SebsPatchVotingPlugin
 version: 0.1.0
 commands:
-	pvote:
-		description: Opens the pvote gui. Type /pvote help to show the help
-		usage: /pvote opens ui. /pvote help shows help
+    pvote:
+        description: Opens the pvote gui. Type /pvote help to show the help
+        usage: /pvote opens ui. /pvote help shows help

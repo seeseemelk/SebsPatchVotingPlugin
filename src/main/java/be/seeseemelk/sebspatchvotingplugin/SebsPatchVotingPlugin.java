@@ -6,7 +6,6 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
-import org.bukkit.inventory.InventoryView;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.plugin.java.JavaPluginLoader;
@@ -35,6 +34,15 @@ public class SebsPatchVotingPlugin extends JavaPlugin implements Listener
 	}
 	
 	/**
+	 * Gets the vote inventory.
+	 * @return The vote inventory.
+	 */
+	public VoteInventory getVoteInventory()
+	{
+		return voteInventory;
+	}
+	
+	/**
 	 * Shows the voting inventory to a player.
 	 * @param player The player to whom the voting inventory should be shown.
 	 */
@@ -57,9 +65,13 @@ public class SebsPatchVotingPlugin extends JavaPlugin implements Listener
 			else
 			{
 				sender.sendMessage(ChatColor.RED + "Only players can use this command");
+				return true;
 			}
 		}
-		return false;
+		else
+		{
+			return false;
+		}
 	}
 }
 

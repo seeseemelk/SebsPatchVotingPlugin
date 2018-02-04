@@ -8,6 +8,7 @@ import org.junit.Test;
 
 import be.seeseemelk.mockbukkit.MockBukkit;
 import be.seeseemelk.mockbukkit.ServerMock;
+import be.seeseemelk.mockbukkit.entity.PlayerMock;
 
 public class SebsPatchVotingPluginTest
 {
@@ -27,6 +28,20 @@ public class SebsPatchVotingPluginTest
 	public void tearDown()
 	{
 		MockBukkit.unload();
+	}
+	
+	@Test
+	public void getVoteInventory_GetsInventory()
+	{
+		assertNotNull(plugin.getVoteInventory());
+	}
+	
+	@Test
+	public void showVoteInventory_OpensInventory()
+	{
+		PlayerMock player = server.addPlayer();
+		plugin.showVoteInventory(player);
+		assertSame(plugin.getVoteInventory(), player.getOpenInventory().getTopInventory());
 	}
 
 }
