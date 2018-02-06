@@ -11,3 +11,6 @@
 
 # Ignore binary files
 *.class
+
+# Ignore jar files in the root
+/*.jar
