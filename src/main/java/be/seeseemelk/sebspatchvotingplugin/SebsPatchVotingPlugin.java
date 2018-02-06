@@ -5,7 +5,9 @@ import java.io.File;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.plugin.java.JavaPluginLoader;
@@ -72,6 +74,15 @@ public class SebsPatchVotingPlugin extends JavaPlugin implements Listener
 		{
 			return false;
 		}
+	}
+	
+	@EventHandler
+	public void onInventoryClicked(InventoryClickEvent event)
+	{
+		if (event.isCancelled())
+			return;
+		if (event.getInventory().equals(voteInventory.getInventory()))
+			event.setCancelled(true);
 	}
 }
 

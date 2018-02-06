@@ -1,5 +1,6 @@
 apply plugin: 'java'
 apply plugin: 'eclipse'
+apply plugin: 'jacoco'
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
@@ -36,11 +37,21 @@ task wrapper(type: Wrapper) {
 task deploy(dependsOn: 'jar') {
 	doLast {
 		project.copy() {
-		from 'build/libs/SebsPatchVotingPlugin.jar'
-		into './server/plugins/'
+			from 'build/libs/SebsPatchVotingPlugin.jar'
+			into './server/plugins/'
 		}
 	}
 }
+
+jacocoTestReport {
+	reports {
+		xml.enabled false
+		csv.enabled false
+		html.destination file("${buildDir}/reports/coverage")
+	}
+}
+
+tasks.check.dependsOn(jacocoTestReport)
 
 eclipse.classpath.downloadJavadoc = true
 eclipse.classpath.downloadSources = true
