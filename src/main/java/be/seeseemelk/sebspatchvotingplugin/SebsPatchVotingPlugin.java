@@ -125,8 +125,6 @@ public class SebsPatchVotingPlugin extends JavaPlugin implements Listener
 					opened = false;
 					Bukkit.broadcastMessage(Messages.MSG_CLOSED);
 					break;
-				default:
-					return false;
 			}
 		}
 		else
