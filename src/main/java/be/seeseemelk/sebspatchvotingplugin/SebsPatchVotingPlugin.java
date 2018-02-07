@@ -71,87 +71,97 @@ public class SebsPatchVotingPlugin extends JavaPlugin implements Listener
 		player.openInventory(voteInventory.getInventory());
 	}
 	
+	/**
+	 * Executed when the player wants to open an inventory.
+	 * @param player The player that wants to open an inventory.
+	 */
+	private void commandShow(Player player)
+	{
+		if (player.hasPermission("pvote.basic"))
+			showVoteInventory(player);
+		else
+			player.sendMessage(Messages.ERR_BASIC_PERMISSION);
+	}
+	
+	/**
+	 * Executed when the players wants to create a new voting option.
+	 * @param player The player that wants to add the option.
+	 * @param optionName The name of the option to add.
+	 */
+	private void commandAdd(Player player, String optionName)
+	{
+		if (player.hasPermission("pvote.admin"))
+		{
+			player.setMetadata("sebspatchvoting_optionname", new FixedMetadataValue(this, optionName));
+			player.openInventory(iconInventory.getInventory());
+		}
+		else
+		{
+			player.sendMessage(Messages.ERR_ADMIN_PERMISSION);
+		}
+	}
+	
+	/**
+	 * Executed when the player wants to use a modification command without a name parameter (such as remove and open)
+	 * @param player The player that wants to use the command.
+	 * @param action The command they used.
+	 * @return
+	 */
+	private boolean commandMod(Player player, String action)
+	{
+		if (player.hasPermission("pvote.admin"))
+		{
+			switch (action)
+			{
+				case "remove":
+					removing.add(player);
+					player.openInventory(voteInventory.getInventory());
+					break;
+				case "open":
+					opened = true;
+					Bukkit.broadcastMessage(Messages.MSG_OPENED);
+					break;
+				case "close":
+					opened = false;
+					Bukkit.broadcastMessage(Messages.MSG_CLOSED);
+					break;
+				default:
+					return false;
+			}
+		}
+		else
+		{
+			player.sendMessage(Messages.ERR_ADMIN_PERMISSION);
+			return true;
+		}
+		return false;
+	}
+	
 	@Override
 	public boolean onCommand(CommandSender sender, Command command, String label, String[] args)
 	{
 		if (sender instanceof Player)
 		{
 			Player player = (Player) sender;
-			if (args.length == 0)
-			{
-				if (player.hasPermission("pvote.basic"))
-				{
-					showVoteInventory(player);
-					return true;
-				}
-				else
-				{
-					player.sendMessage(Messages.ERR_BASIC_PERMISSION);
-					return true;
-				}
-			}
-			else if (args.length >= 2)
+			if (args.length == 0) // Show an inventory
+				commandShow(player);
+			else if (args.length >= 2) // Add an option
 			{
 				String action = args[0];
 				String name = String.join(" ", Arrays.copyOfRange(args, 1, args.length));
 				if (action.equals("add"))
-				{
-					if (player.hasPermission("pvote.admin"))
-					{
-						player.setMetadata("sebspatchvoting_optionname", new FixedMetadataValue(this, name));
-						player.openInventory(iconInventory.getInventory());
-						return true;
-					}
-					else
-					{
-						player.sendMessage(Messages.ERR_ADMIN_PERMISSION);
-						return true;
-					}
-				}
+					commandAdd(player, name);
 				else
-				{
 					return false;
-				}
 			}
-			else if (args.length == 1)
-			{
-				if (player.hasPermission("pvote.admin"))
-				{
-					String action = args[0].toLowerCase();
-					switch (action)
-					{
-						case "remove":
-							removing.add(player);
-							player.openInventory(voteInventory.getInventory());
-							return true;
-						case "open":
-							opened = true;
-							Bukkit.broadcastMessage(Messages.MSG_OPENED);
-							return true;
-						case "close":
-							opened = false;
-							Bukkit.broadcastMessage(Messages.MSG_CLOSED);
-							return true;
-						default:
-							return false;
-					}
-				}
-				else
-				{
-					player.sendMessage(Messages.ERR_ADMIN_PERMISSION);
-					return true;
-				}
-			}
+			else if (args.length == 1) // Other modification commands
+				return commandMod(player, args[0].toLowerCase());
 			else
-			{
 				return false;
-			}
 		}
 		else
-		{
 			sender.sendMessage(Messages.ERR_ONLY_PLAYER);
-			return true;
-		}
+		return true;
 	}
 	
 	/**
