@@ -1,11 +1,19 @@
 package be.seeseemelk.sebspatchvotingplugin;
 
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assume.assumeNotNull;
+import static org.junit.Assume.assumeThat;
+import static org.junit.Assume.assumeTrue;
+
+import java.util.List;
 
 import org.bukkit.Material;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -108,6 +116,15 @@ public class VoteInventoryTest
 		inventory.addVoteOption("option", Material.WOOD);
 		inventory.addVote(player, "option");
 		assertEquals(1, inventory.getVotesOnOption("option"));
+		
+		ItemStack item = inventory.getItem("option");
+		assumeNotNull(item);
+		assumeTrue(item.hasItemMeta());
+		ItemMeta meta = item.getItemMeta();
+		assumeTrue(meta.hasLore());
+		List<String> lore = meta.getLore();
+		assumeThat(lore.size(), is(1));
+		assertEquals("Votes: 1", inventory.getItem("option").getItemMeta().getLore().get(0));
 	}
 	
 	@Test(expected = VotingOptionNotFoundException.class)
@@ -219,6 +236,20 @@ public class VoteInventoryTest
 		assertNotNull(inventory.getInventory());
 	}
 	
+	@Test
+	public void getItem_OptionAdded_ItemStackReturned()
+	{
+		inventory.addVoteOption("option", Material.WOOD);
+		ItemStack item = inventory.getItem("option");
+		assertNotNull(item);
+		assertTrue(item.hasItemMeta());
+		ItemMeta meta = item.getItemMeta();
+		assertEquals("option", meta.getDisplayName());
+		assertTrue(meta.hasLore());
+		List<String> lore = meta.getLore();
+		assertEquals(1, lore.size());
+		assertEquals("Votes: 0", lore.get(0));
+	}
 }
 
 

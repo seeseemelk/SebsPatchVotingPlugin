@@ -27,7 +27,7 @@ import be.seeseemelk.sebspatchvotingplugin.exceptions.VotingOptionNotFoundExcept
 public class VoteInventory
 {
 	private Inventory inventory;
-	private Map<String, ItemStack> votingItems = new HashMap<>();
+	private Map<String, Integer> votingItems = new HashMap<>();
 	private int maxVotes = 3;
 	private Map<Player, Collection<String>> votes = new HashMap<>();
 
@@ -95,8 +95,19 @@ public class VoteInventory
 		meta.setDisplayName(name);
 		meta.setLore(Arrays.asList("Votes: 0"));
 		item.setItemMeta(meta);
-		inventory.addItem(item);
-		votingItems.put(name, item);
+		
+		ItemStack[] contents = inventory.getContents();
+		int index = -1;
+		for (int i = 0; i < contents.length; i++)
+		{
+			if (contents[i] == null || contents[i].getType() == Material.AIR)
+			{
+				index = i;
+				break;
+			}
+		}
+		inventory.setItem(index, item);
+		votingItems.put(name, index);
 	}
 
 	/**
@@ -129,15 +140,18 @@ public class VoteInventory
 	 */
 	private void updateItemAddVote(String option, int votesToAdd)
 	{
-		ItemStack item = votingItems.get(option);
+		int itemIndex = votingItems.get(option);
+		ItemStack item = inventory.getItem(itemIndex);
 		ItemMeta meta = item.getItemMeta();
 		List<String> lore = meta.getLore();
 		String votesStr = lore.get(0);
 		int votes = Integer.parseInt(votesStr.substring(7));
 		votes += votesToAdd;
 		lore.set(0, "Votes: " + votes);
+
 		meta.setLore(lore);
 		item.setItemMeta(meta);
+		inventory.setItem(itemIndex, item);
 	}
 
 	/**
@@ -200,9 +214,10 @@ public class VoteInventory
 	 */
 	public int getVotesOnOption(String option) throws VotingOptionNotFoundException
 	{
-		ItemStack item = votingItems.get(option);
-		if (item != null)
+		Integer itemIndex = votingItems.get(option);
+		if (itemIndex != null)
 		{
+			ItemStack item = inventory.getItem(itemIndex);
 			ItemMeta meta = item.getItemMeta();
 			List<String> lore = meta.getLore();
 			String votesStr = lore.get(0);
@@ -277,6 +292,16 @@ public class VoteInventory
 			return false;
 		else
 			return !hasVotedOn(player, option);
+	}
+	
+	/**
+	 * Gets the {@link ItemStack} that represents an option.
+	 * @param option The name of the voting option.
+	 * @return A copy of the {@link ItemStack} that represents the option.
+	 */
+	public ItemStack getItem(String option)
+	{
+		return inventory.getItem(votingItems.get(option));
 	}
 
 	/**
