@@ -135,31 +135,44 @@ public class SebsPatchVotingPlugin extends JavaPlugin implements Listener
 		return false;
 	}
 	
+	/**
+	 * Executed when a player runs a command.
+	 * @param player The player that ran the command.
+	 * @param args The arguments the player passed.
+	 */
+	private boolean onCommandByPlayer(Player player, String[] args)
+	{
+		if (args.length == 0) // Show an inventory
+			commandShow(player);
+		else if (args.length == 1) // Other modification commands
+			return commandMod(player, args[0].toLowerCase());
+		else if (args.length >= 2) // Add an option
+		{
+			String action = args[0];
+			if (action.equals("add"))
+			{
+				String name = String.join(" ", Arrays.copyOfRange(args, 1, args.length));
+				commandAdd(player, name);
+			}
+			else
+				return false;
+		}
+		return true;
+	}
+	
 	@Override
 	public boolean onCommand(CommandSender sender, Command command, String label, String[] args)
 	{
 		if (sender instanceof Player)
 		{
 			Player player = (Player) sender;
-			if (args.length == 0) // Show an inventory
-				commandShow(player);
-			else if (args.length >= 2) // Add an option
-			{
-				String action = args[0];
-				String name = String.join(" ", Arrays.copyOfRange(args, 1, args.length));
-				if (action.equals("add"))
-					commandAdd(player, name);
-				else
-					return false;
-			}
-			else if (args.length == 1) // Other modification commands
-				return commandMod(player, args[0].toLowerCase());
-			else
-				return false;
+			return onCommandByPlayer(player, args);
 		}
 		else
+		{
 			sender.sendMessage(Messages.ERR_ONLY_PLAYER);
-		return true;
+			return true;
+		}
 	}
 	
 	/**
