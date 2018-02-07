@@ -6,7 +6,6 @@ import java.util.Collection;
 import java.util.HashSet;
 
 import org.bukkit.Bukkit;
-import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -210,27 +209,37 @@ public class SebsPatchVotingPlugin extends JavaPlugin implements Listener
 		player.sendMessage(Messages.MSG_OPTION_ADDED);
 	}
 	
+	/**
+	 * Executed when a player has clicked on either an icon inventory or a vote inventory.
+	 * @param player The player that clicked.
+	 * @param inventory The inventory that was clicked.
+	 * @param item The item that was clicked, if any.
+	 */
+	private void onInventoryClicked(Player player, Inventory inventory, ItemStack item)
+	{
+		if (Utils.isEmptyItem(item))
+			return;
+		
+		if (voteInventory.getInventory().equals(inventory))
+			onVoteInventoryClicked(player, item);
+		else if (iconInventory.getInventory().equals(inventory))
+			onIconInventoryClicked(player, item);
+	}
+	
 	@EventHandler
-	public void onInventoryClicked(InventoryClickEvent event)
+	public void onInventoryClickedHandler(InventoryClickEvent event)
 	{
 		if (event.isCancelled())
 			return;
 		
 		Inventory clickedInventory = event.getClickedInventory();
-		Player player = (Player) event.getWhoClicked();
-		ItemStack item = event.getCurrentItem();
-		
-		Inventory inventory = event.getInventory();
-		if (inventory.equals(voteInventory.getInventory()) || inventory.equals(iconInventory.getInventory()))
+		Inventory primaryInventory = event.getInventory();
+		if (primaryInventory.equals(voteInventory.getInventory()) || primaryInventory.equals(iconInventory.getInventory()))
 		{
 			event.setCancelled(true);
-			if (item != null && item.getType() != Material.AIR)
-			{
-				if (voteInventory.getInventory().equals(clickedInventory))
-					onVoteInventoryClicked(player, item);
-				else if (iconInventory.getInventory().equals(clickedInventory))
-					onIconInventoryClicked(player, item);
-			}
+			Player player = (Player) event.getWhoClicked();
+			ItemStack item = event.getCurrentItem();
+			onInventoryClicked(player, clickedInventory, item);
 		}
 	}
 }
