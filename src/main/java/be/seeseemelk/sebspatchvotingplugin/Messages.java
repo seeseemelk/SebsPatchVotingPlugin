@@ -6,6 +6,8 @@ public final class Messages
 {
 	public static final String ERR_NOT_OPENED = ChatColor.RED + "The voting menu is not yet opened";
 	public static final String ERR_ONLY_PLAYER = ChatColor.RED + "Only players can use this command";
+	public static final String ERR_BASIC_PERMISSION = ChatColor.RED + "You need pvote.basic permission to use this";
+	public static final String ERR_ADMIN_PERMISSION = ChatColor.RED + "You need pvote.admin permission to use this";
 	public static final String MSG_OPTION_ADDED = ChatColor.GREEN + "Voting option added";
 	public static final String MSG_OPTION_REMOVED = ChatColor.GREEN + "Voting option removed";
 	public static final String MSG_OPENED = ChatColor.GREEN + "Voting has been opened";

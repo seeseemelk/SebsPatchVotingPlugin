@@ -80,8 +80,16 @@ public class SebsPatchVotingPlugin extends JavaPlugin implements Listener
 			Player player = (Player) sender;
 			if (args.length == 0)
 			{
-				showVoteInventory(player);
-				return true;
+				if (player.hasPermission("pvote.basic"))
+				{
+					showVoteInventory(player);
+					return true;
+				}
+				else
+				{
+					player.sendMessage(Messages.ERR_BASIC_PERMISSION);
+					return true;
+				}
 			}
 			else if (args.length >= 2)
 			{
@@ -89,9 +97,17 @@ public class SebsPatchVotingPlugin extends JavaPlugin implements Listener
 				String name = String.join(" ", Arrays.copyOfRange(args, 1, args.length));
 				if (action.equals("add"))
 				{
-					player.setMetadata("sebspatchvoting_optionname", new FixedMetadataValue(this, name));
-					player.openInventory(iconInventory.getInventory());
-					return true;
+					if (player.hasPermission("pvote.admin"))
+					{
+						player.setMetadata("sebspatchvoting_optionname", new FixedMetadataValue(this, name));
+						player.openInventory(iconInventory.getInventory());
+						return true;
+					}
+					else
+					{
+						player.sendMessage(Messages.ERR_ADMIN_PERMISSION);
+						return true;
+					}
 				}
 				else
 				{
@@ -100,23 +116,31 @@ public class SebsPatchVotingPlugin extends JavaPlugin implements Listener
 			}
 			else if (args.length == 1)
 			{
-				String action = args[0].toLowerCase();
-				switch (action)
+				if (player.hasPermission("pvote.admin"))
 				{
-					case "remove":
-						removing.add(player);
-						player.openInventory(voteInventory.getInventory());
-						return true;
-					case "open":
-						opened = true;
-						Bukkit.broadcastMessage(Messages.MSG_OPENED);
-						return true;
-					case "close":
-						opened = false;
-						Bukkit.broadcastMessage(Messages.MSG_CLOSED);
-						return true;
-					default:
-						return false;
+					String action = args[0].toLowerCase();
+					switch (action)
+					{
+						case "remove":
+							removing.add(player);
+							player.openInventory(voteInventory.getInventory());
+							return true;
+						case "open":
+							opened = true;
+							Bukkit.broadcastMessage(Messages.MSG_OPENED);
+							return true;
+						case "close":
+							opened = false;
+							Bukkit.broadcastMessage(Messages.MSG_CLOSED);
+							return true;
+						default:
+							return false;
+					}
+				}
+				else
+				{
+					player.sendMessage(Messages.ERR_ADMIN_PERMISSION);
+					return true;
 				}
 			}
 			else
