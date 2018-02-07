@@ -9,11 +9,11 @@ import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.plugin.PluginDescriptionFile;
@@ -155,57 +155,82 @@ public class SebsPatchVotingPlugin extends JavaPlugin implements Listener
 		}
 	}
 	
+	/**
+	 * Executed when a player tries to remove an option from the vote inventory by clicking on the item.
+	 * @param player The player that is removing an item.
+	 * @param item The item that should be removed.
+	 */
+	private void voteInventoryRemoveOption(Player player, ItemStack item)
+	{
+		voteInventory.removeVoteOption(item.getItemMeta().getDisplayName());
+		player.closeInventory();
+		removing.remove(player);
+		player.sendMessage(Messages.MSG_OPTION_REMOVED);
+	}
+	
+	/**
+	 * Executed when a player tries to vote on an option in the vote inventory by clicking on the item.
+	 * @param player The player that is placing the vote.
+	 * @param item The item that the player voted for.
+	 */
+	private void voteInventoryPlaceVote(Player player, ItemStack item)
+	{
+		String option = item.getItemMeta().getDisplayName();
+		if (voteInventory.hasVotedOn(player, option))
+			voteInventory.removeVote(player, option);
+		else
+			voteInventory.addVote(player, option);
+	}
+	
+	/**
+	 * Executed when a vote inventory was clicked by a player.
+	 * @param player The player that clicked on the inventory.
+	 * @param item The item that was clicked on by the player.
+	 */
+	private void onVoteInventoryClicked(Player player, ItemStack item)
+	{
+		if (removing.contains(player))
+			voteInventoryRemoveOption(player, item);
+		else if (opened)
+			voteInventoryPlaceVote(player, item);
+		else
+			player.sendMessage(Messages.ERR_NOT_OPENED);
+	}
+	
+	/**
+	 * Executed when an icon inventory was clicked by a player.
+	 * @param player The player that clicked on the inventory.
+	 * @param item The item that was clicked on by the player.
+	 */
+	private void onIconInventoryClicked(Player player, ItemStack item)
+	{
+		String optionName = player.getMetadata("sebspatchvoting_optionname").get(0).asString();
+		voteInventory.addVoteOption(optionName, item.getType());
+		player.closeInventory();
+		player.sendMessage(Messages.MSG_OPTION_ADDED);
+	}
+	
 	@EventHandler
 	public void onInventoryClicked(InventoryClickEvent event)
 	{
 		if (event.isCancelled())
 			return;
-		else if (event.getInventory().equals(voteInventory.getInventory()))
+		
+		Inventory clickedInventory = event.getClickedInventory();
+		Player player = (Player) event.getWhoClicked();
+		ItemStack item = event.getCurrentItem();
+		
+		Inventory inventory = event.getInventory();
+		if (inventory.equals(voteInventory.getInventory()) || inventory.equals(iconInventory.getInventory()))
 		{
-			if (voteInventory.getInventory().equals(event.getClickedInventory()))
-			{
-				ItemStack item = event.getCurrentItem();
-				if (item.getType() != Material.AIR)
-				{
-					Player player = (Player) event.getWhoClicked();
-					String optionName = item.getItemMeta().getDisplayName();
-					if (removing.contains(player))
-					{
-						voteInventory.removeVoteOption(optionName);
-						player.closeInventory();
-						removing.remove(player);
-						player.sendMessage(Messages.MSG_OPTION_REMOVED);
-					}
-					else
-					{
-						if (opened)
-						{
-							if (voteInventory.hasVotedOn(player, optionName))
-								voteInventory.removeVote(player, optionName);
-							else
-								voteInventory.addVote(player, optionName);
-						}
-						else
-						{
-							player.sendMessage(Messages.ERR_NOT_OPENED);
-						}
-					}
-				}
-			}
 			event.setCancelled(true);
-		}
-		else if (event.getInventory().equals(iconInventory.getInventory()))
-		{
-			if (iconInventory.getInventory().equals(event.getClickedInventory()))
+			if (item != null && item.getType() != Material.AIR)
 			{
-				HumanEntity entity = event.getWhoClicked();
-				ItemStack item = event.getCurrentItem();
-				String optionName = entity.getMetadata("sebspatchvoting_optionname").get(0).asString();
-				voteInventory.addVoteOption(optionName, item.getType());
-				entity.closeInventory();
-				entity.sendMessage(Messages.MSG_OPTION_ADDED);
+				if (voteInventory.getInventory().equals(clickedInventory))
+					onVoteInventoryClicked(player, item);
+				else if (iconInventory.getInventory().equals(clickedInventory))
+					onIconInventoryClicked(player, item);
 			}
-			event.setCancelled(true);
 		}
 	}
 }
