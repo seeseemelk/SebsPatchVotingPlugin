@@ -1,15 +1,26 @@
 package be.seeseemelk.sebspatchvotingplugin;
 
-import net.md_5.bungee.api.ChatColor;
+import java.io.InputStreamReader;
+import java.io.Reader;
 
-public final class Messages
+import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.plugin.Plugin;
+
+public class Messages
 {
-	public static final String ERR_NOT_OPENED = ChatColor.RED + "The voting menu is not yet opened";
-	public static final String ERR_ONLY_PLAYER = ChatColor.RED + "Only players can use this command";
-	public static final String ERR_BASIC_PERMISSION = ChatColor.RED + "You need pvote.basic permission to use this";
-	public static final String ERR_ADMIN_PERMISSION = ChatColor.RED + "You need pvote.admin permission to use this";
-	public static final String MSG_OPTION_ADDED = ChatColor.GREEN + "Voting option added";
-	public static final String MSG_OPTION_REMOVED = ChatColor.GREEN + "Voting option removed";
-	public static final String MSG_OPENED = ChatColor.GREEN + "Voting has been opened";
-	public static final String MSG_CLOSED = ChatColor.GREEN + "Voting has been closed";
+	private static YamlConfiguration messages;
+	
+	public static void setLanguage(Plugin plugin, String languageCode)
+	{
+		Reader reader = new InputStreamReader(plugin.getResource("messages_" + languageCode + ".yml"));
+		messages = YamlConfiguration.loadConfiguration(reader);
+	}
+	
+	public static String getString(String key)
+	{
+		if (messages.contains(key))
+			return messages.getString(key);
+		else
+			throw new IllegalArgumentException("Could not find message with key " + key);
+	}
 }

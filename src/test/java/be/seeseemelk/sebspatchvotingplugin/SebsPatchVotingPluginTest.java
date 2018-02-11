@@ -140,7 +140,7 @@ public class SebsPatchVotingPluginTest
 	{
 		ConsoleCommandSenderMock console = (ConsoleCommandSenderMock) server.getConsoleSender();
 		assertTrue(server.dispatchCommand(console, "pvote"));
-		console.assertSaid(Messages.ERR_ONLY_PLAYER);
+		console.assertSaid(Messages.getString("ERR.ONLY_PLAYER"));
 		console.assertNoMoreSaid();
 	}
 	
@@ -156,7 +156,7 @@ public class SebsPatchVotingPluginTest
 		assertTrue(event.isCancelled());
 		assertEquals(InventoryType.CRAFTING, player.getOpenInventory().getType());
 		assertTrue(plugin.getVoteInventory().hasVoteOption("my option"));
-		player.assertSaid(Messages.MSG_OPTION_ADDED);
+		player.assertSaid(Messages.getString("MSG.OPTION_ADDED"));
 	}
 	
 	@Test
@@ -173,7 +173,7 @@ public class SebsPatchVotingPluginTest
 		assertTrue(event.isCancelled());
 		assertEquals(InventoryType.CRAFTING, player.getOpenInventory().getType());
 		assertFalse(plugin.getVoteInventory().hasVoteOption("my option"));
-		player.assertSaid(Messages.MSG_OPTION_REMOVED);
+		player.assertSaid(Messages.getString("MSG_OPTION_REMOVED"));
 	}
 	
 }

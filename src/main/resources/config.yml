@@ -1,0 +1,4 @@
+language: en_US
+#language: zh_CN
+
+max_number_of_votes: 3

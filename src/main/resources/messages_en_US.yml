@@ -1,0 +1,8 @@
+ERR_ADMIN_PERMISSION: You need pvote.admin permission to use this
+ERR_BASIC_PERMISSION: You need pvote.basic permission to use this
+ERR_NOT_OPENED: The voting menu is not yet opened
+ERR_ONLY_PLAYER: Only players can use this command
+MSG_CLOSED: Voting has been closed
+MSG_OPENED: Voting has been opened
+MSG_OPTION_ADDED: Voting option added
+MSG_OPTION_REMOVED: Voting option removed

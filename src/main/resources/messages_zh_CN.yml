@@ -1,0 +1,8 @@
+ERR_NOT_OPENED: "投票菜单还没有打开"
+ERR_ONLY_PLAYER: "只有玩家才能进行这个操作"
+ERR_BASIC_PERMISSION: "你需要pvote.basic权限来进行这个操作"
+ERR_ADMIN_PERMISSION: "你需要pvote.admin权限来进行这个操作"
+MSG_OPTION_ADDED: "投票选项已添加"
+MSG_OPTION_REMOVED: "投票选项已删除"
+MSG_OPENED: "投票已经开启"
+MSG_CLOSED: "投票已经关闭"

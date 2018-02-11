@@ -39,7 +39,11 @@ public class SebsPatchVotingPlugin extends JavaPlugin implements Listener
 	@Override
 	public void onEnable()
 	{
+		saveDefaultConfig();
+		Messages.setLanguage(this, getConfig().getString("language"));
+		
 		voteInventory = new VoteInventory();
+		voteInventory.setMaximumNumberOfVotes(getConfig().getInt("max_number_of_votes"));
 		iconInventory = new IconInventory();
 		getServer().getPluginManager().registerEvents(this, this);
 	}
@@ -80,7 +84,7 @@ public class SebsPatchVotingPlugin extends JavaPlugin implements Listener
 		if (player.hasPermission("pvote.basic"))
 			showVoteInventory(player);
 		else
-			player.sendMessage(Messages.ERR_BASIC_PERMISSION);
+			player.sendMessage(Messages.getString("ERR_BASIC_PERMISSION"));
 	}
 	
 	/**
@@ -97,7 +101,7 @@ public class SebsPatchVotingPlugin extends JavaPlugin implements Listener
 		}
 		else
 		{
-			player.sendMessage(Messages.ERR_ADMIN_PERMISSION);
+			player.sendMessage(Messages.getString("ERR_ADMIN_PERMISSION"));
 		}
 	}
 	
@@ -119,20 +123,21 @@ public class SebsPatchVotingPlugin extends JavaPlugin implements Listener
 					break;
 				case "open":
 					opened = true;
-					Bukkit.broadcastMessage(Messages.MSG_OPENED);
+					Bukkit.broadcastMessage(Messages.getString("MSG_OPENED"));
 					break;
 				case "close":
 					opened = false;
-					Bukkit.broadcastMessage(Messages.MSG_CLOSED);
+					Bukkit.broadcastMessage(Messages.getString("MSG_CLOSED"));
 					break;
+				default:
+					return false;
 			}
 		}
 		else
 		{
-			player.sendMessage(Messages.ERR_ADMIN_PERMISSION);
-			return true;
+			player.sendMessage(Messages.getString("ERR_ADMIN_PERMISSION"));
 		}
-		return false;
+		return true;
 	}
 	
 	/**
@@ -170,7 +175,7 @@ public class SebsPatchVotingPlugin extends JavaPlugin implements Listener
 		}
 		else
 		{
-			sender.sendMessage(Messages.ERR_ONLY_PLAYER);
+			sender.sendMessage(Messages.getString("ERR_ONLY_PLAYER"));
 			return true;
 		}
 	}
@@ -185,7 +190,7 @@ public class SebsPatchVotingPlugin extends JavaPlugin implements Listener
 		voteInventory.removeVoteOption(item.getItemMeta().getDisplayName());
 		player.closeInventory();
 		removing.remove(player);
-		player.sendMessage(Messages.MSG_OPTION_REMOVED);
+		player.sendMessage(Messages.getString("MSG_OPTION_REMOVED"));
 	}
 	
 	/**
@@ -214,7 +219,7 @@ public class SebsPatchVotingPlugin extends JavaPlugin implements Listener
 		else if (opened)
 			voteInventoryPlaceVote(player, item);
 		else
-			player.sendMessage(Messages.ERR_NOT_OPENED);
+			player.sendMessage(Messages.getString("ERR_NOT_OPENED"));
 	}
 	
 	/**
@@ -227,7 +232,7 @@ public class SebsPatchVotingPlugin extends JavaPlugin implements Listener
 		String optionName = player.getMetadata("sebspatchvoting_optionname").get(0).asString();
 		voteInventory.addVoteOption(optionName, item.getType());
 		player.closeInventory();
-		player.sendMessage(Messages.MSG_OPTION_ADDED);
+		player.sendMessage(Messages.getString("MSG_OPTION_ADDED"));
 	}
 	
 	/**
