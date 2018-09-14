@@ -84,7 +84,10 @@ public class SebsPatchVotingPlugin extends JavaPlugin implements Listener
 		if (player.hasPermission("pvote.basic"))
 			showVoteInventory(player);
 		else
+		{
+			Bukkit.getLogger().info("No Permission");
 			player.sendMessage(Messages.getString("ERR_BASIC_PERMISSION"));
+		}
 	}
 	
 	/**

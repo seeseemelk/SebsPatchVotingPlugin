@@ -130,6 +130,7 @@ public class SebsPatchVotingPluginTest
 	{
 		plugin.setOpened(true);
 		PlayerMock player = server.addPlayer();
+		player.addAttachment(plugin).setPermission("pvote.basic", true);
 		assertTrue(player.performCommand("pvote"));
 		assertEquals(plugin.getVoteInventory().getInventory(), player.getOpenInventory().getTopInventory());
 		player.assertNoMoreSaid();
@@ -140,7 +141,7 @@ public class SebsPatchVotingPluginTest
 	{
 		ConsoleCommandSenderMock console = (ConsoleCommandSenderMock) server.getConsoleSender();
 		assertTrue(server.dispatchCommand(console, "pvote"));
-		console.assertSaid(Messages.getString("ERR.ONLY_PLAYER"));
+		console.assertSaid(Messages.getString("ERR_ONLY_PLAYER"));
 		console.assertNoMoreSaid();
 	}
 	
@@ -148,6 +149,8 @@ public class SebsPatchVotingPluginTest
 	public void commandPvoteAdd_Player_OptionAdded()
 	{
 		PlayerMock player = server.addPlayer();
+		player.addAttachment(plugin).setPermission("pvote.basic", true);
+		player.addAttachment(plugin).setPermission("pvote.admin", true);
 		player.performCommand("pvote add my option");
 		InventoryView view = player.getOpenInventory();
 		assertEquals(InventoryType.CHEST, view.getType());
@@ -156,13 +159,15 @@ public class SebsPatchVotingPluginTest
 		assertTrue(event.isCancelled());
 		assertEquals(InventoryType.CRAFTING, player.getOpenInventory().getType());
 		assertTrue(plugin.getVoteInventory().hasVoteOption("my option"));
-		player.assertSaid(Messages.getString("MSG.OPTION_ADDED"));
+		player.assertSaid(Messages.getString("MSG_OPTION_ADDED"));
 	}
 	
 	@Test
 	public void commandPvoteRemove_OptionAdded_OptionRemoved()
 	{
 		PlayerMock player = server.addPlayer();
+		player.addAttachment(plugin).setPermission("pvote.basic", true);
+		player.addAttachment(plugin).setPermission("pvote.admin", true);
 		plugin.getVoteInventory().addVoteOption("option", Material.WOOD);
 		
 		player.performCommand("pvote remove");
